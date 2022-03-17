@@ -4,7 +4,7 @@
 import time
 from typing import Any
 
-from flask import Flask, request, session, redirect
+from flask import Flask, request, session, redirect, render_template
 from flask.sessions import SessionMixin
 
 import spotipy
@@ -17,8 +17,16 @@ app.secret_key = "SessionSecretKey"
 
 
 @app.route("/")
-def hello():
-    return "Hello World!"
+def home():
+    return render_template("home.html")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+@app.route("/discover_enhanced")
+def discover_enhanced():
+    return render_template("discover_enhanced.html")
 
 
 @app.route("/callback")
@@ -30,12 +38,8 @@ def callback():
     code = request.args.get("code")
     # token_info = sp_oauth.get_access_token(code)
     session["token_info"] = {"code": code} # change for `token_info`
-
-    title = "<h1>You successfully logged in to Spotify!</h1>"
-    msg = "<p>You can go back to the application.</p>"
-    code_print = f"<p>Code:</p><p>{code}</p>"
     
-    return title + msg + code_print
+    return render_template("callback.html", code=code)
 
 # @app.route("/go", methods=["POST"])
 # def go():

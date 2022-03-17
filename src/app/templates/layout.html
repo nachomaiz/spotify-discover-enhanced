@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>🎧 Discover Weekly Enhanced</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">Spotify Discover Enhanced</h1>
+            <strong>
+                <nav>
+                    <ul class="menu">
+                        <li><a href="{{ url_for('home') }}">Home</a></li>
+                        <li><a href="{{ url_for('about') }}">About</a></li>
+                        <li><a href="{{ url_for('callback') }}?code=TestCallback">Callback (DEV)</a></li> <!--DEV-->
+                        <li><a href="{{ url_for('discover_enhanced') }}">Discover Enhanced</a></li>
+                    </ul>
+                </nav>
+            </strong>
+        </div>
+    </header>
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <footer>
+        <div class="container">
+            <p>Discover Weekly Enhanced. <a href="https://github.com/nachomaiz/spotify-discover-enhanced">GitHub</a></p>
+    </footer>
+</body>
+
+</html>
