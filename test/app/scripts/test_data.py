@@ -9,7 +9,7 @@ import unittest.mock
 import pathlib
 import json
 
-from src.worker.data import Playlist, Track
+from src.app.scripts.data import Playlist, Track
 
 HERE = pathlib.Path(__file__).parent
 

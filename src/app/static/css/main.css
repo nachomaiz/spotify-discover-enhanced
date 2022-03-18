@@ -105,3 +105,18 @@ body {
     color: #14B882;
     text-decoration: none;
   }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px 0 solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #444;
+}

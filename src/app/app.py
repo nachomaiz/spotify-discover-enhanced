@@ -3,17 +3,24 @@
 
 import time
 from typing import Any
+import json
 
 from flask import Flask, request, session, redirect, render_template
 from flask.sessions import SessionMixin
 
-import spotipy
+import spotipy as sp
+import pandas as pd
+
+from scripts.data import Playlist
 
 SCOPES = ["playlist-modify-private", "playlist-modify-public", "user-top-read"]
 
 app = Flask(__name__)
 
 app.secret_key = "SessionSecretKey"
+
+with open("test/samples/playlist.json", encoding="utf-8") as f:
+    test_playlist_response = json.load(f)
 
 
 @app.route("/")
@@ -28,14 +35,17 @@ def about():
 
 @app.route("/discover_enhanced")
 def discover_enhanced():
-    return render_template("discover_enhanced.html")
+    
+    playlist = Playlist.from_response(test_playlist_response).summary()
+    playlist["Duration"] = pd.to_datetime(playlist["Duration"], unit='s')
+    return render_template("discover_enhanced.html", table=playlist.style.format({"Duration": lambda s: s.strftime("%M:%S")}).hide_index().to_html(index=False, border=0))
 
 
 @app.route("/callback")
 def callback():
 
     # will enable once callback does things.
-    # sp_oauth = spotipy.oauth2.SpotifyOAuth(scope=SCOPES)
+    # sp_oauth = sp.oauth2.SpotifyOAuth(scope=SCOPES)
     session.clear()
     code = request.args.get("code")
     # token_info = sp_oauth.get_access_token(code)
@@ -71,7 +81,7 @@ def callback():
 #     # Refreshing token if it has expired
 #     if is_token_expired:
 #         # Don't reuse a SpotifyOAuth object because they store token info and you could leak user tokens if you reuse a SpotifyOAuth object
-#         sp_oauth = spotipy.oauth2.SpotifyOAuth(scope = SCOPES)
+#         sp_oauth = sp.oauth2.SpotifyOAuth(scope = SCOPES)
 #         token_info = sp_oauth.refresh_access_token(session.get('token_info').get('refresh_token'))
 
 #     token_valid = True
