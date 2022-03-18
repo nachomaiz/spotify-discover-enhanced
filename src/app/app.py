@@ -38,7 +38,10 @@ def discover_enhanced():
     
     playlist = Playlist.from_response(test_playlist_response).summary()
     playlist["Duration"] = pd.to_datetime(playlist["Duration"], unit='s')
-    return render_template("discover_enhanced.html", table=playlist.style.format({"Duration": lambda s: s.strftime("%M:%S")}).hide_index().to_html(index=False, border=0))
+    
+    table_render = playlist.style.format({"Duration": lambda s: s.strftime("%M:%S")}).hide_index().to_html(index=False, border=0)
+    
+    return render_template("discover_enhanced.html", table=table_render)
 
 
 @app.route("/callback")
