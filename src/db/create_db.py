@@ -54,11 +54,11 @@ def main():
 
         # create playlists_songs table
         create_table(conn, sql_create_playlists_songs_table)
-        
+
         conn.close()
     else:
         print("Error! cannot create the database connection.")
-        
+
 
 if __name__ == "__main__":
     main()

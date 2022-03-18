@@ -20,9 +20,11 @@ app.secret_key = "SessionSecretKey"
 def home():
     return render_template("home.html")
 
+
 @app.route("/about")
 def about():
     return render_template("about.html")
+
 
 @app.route("/discover_enhanced")
 def discover_enhanced():
@@ -37,9 +39,10 @@ def callback():
     session.clear()
     code = request.args.get("code")
     # token_info = sp_oauth.get_access_token(code)
-    session["token_info"] = {"code": code} # change for `token_info`
-    
+    session["token_info"] = {"code": code}  # change for `token_info`
+
     return render_template("callback.html", code=code)
+
 
 # @app.route("/go", methods=["POST"])
 # def go():
@@ -49,8 +52,8 @@ def callback():
 #         return redirect("/")
 #     data = request.form
 #     return redirect("/")
-    
-    
+
+
 # # Checks to see if token is valid and gets a new token if not
 # def get_token(session: SessionMixin) -> tuple[dict[str, Any], bool]:
 #     token_valid = False
