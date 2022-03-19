@@ -13,10 +13,10 @@ from src.app.scripts.data import Playlist, Track
 
 HERE = pathlib.Path(__file__).parent
 
-with open(HERE.parent / "samples" / "track.json", encoding="utf-8") as f:
+with open(HERE.parent.parent / "samples" / "track.json", encoding="utf-8") as f:
     sample_track: dict[str, Any] = json.load(f)
 
-with open(HERE.parent / "samples" / "playlist.json", encoding="utf-8") as f:
+with open(HERE.parent.parent / "samples" / "playlist.json", encoding="utf-8") as f:
     sample_playlist: dict[str, Any] = json.load(f)
 
 
@@ -29,6 +29,7 @@ class TestTrackInit(unittest.TestCase):
             instance = mock_Spotify.return_value
             instance.track.return_value = sample_track
             track = Track.from_client(sample_track["id"], mock_Spotify)
+            mock_Spotify.track.assert_called_once_with(sample_track["id"])
             self.assertIsInstance(track, Track)
 
 
@@ -57,8 +58,9 @@ class TestPlaylistInit(unittest.TestCase):
         with unittest.mock.patch("spotipy.client.Spotify") as mock_Spotify:
             instance = mock_Spotify.return_value
             instance.playlist.return_value = sample_playlist
-            track = Track.from_client(sample_playlist["id"], mock_Spotify)
-            self.assertIsInstance(track, Track)
+            playlist = Playlist.from_client(sample_playlist["id"], mock_Spotify)
+            mock_Spotify.playlist.assert_called_once_with(sample_playlist["id"])
+            self.assertIsInstance(playlist, Playlist)
 
 
 class TestPlaylistProperties(unittest.TestCase):
