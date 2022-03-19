@@ -3,8 +3,7 @@ body {
     padding: 0;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #ccc;
-    margin-bottom:60px;
-    background-color: #222;
+    background-color: #181818;
   }
   /*
    * Formatting the header area
@@ -17,24 +16,25 @@ body {
     margin-bottom: 30px;
     padding: 1.5em 0;
   }
-  header h1.logo {
-    margin: 0;
-    font-size: 1.7em;
-    color: #fff;
-    text-transform: uppercase;
-    float: left;
+    header h1.logo {
+      margin: 0;
+      font-size: 1.7em;
+      color: #fff;
+      text-transform: uppercase;
+      float: left;
   }
-  header h1.logo:hover {
-    color: #1EDB61;
-    text-decoration: none;
+    header h1.logo:hover {
+      color: #1EDB61;
+      text-decoration: none;
   }
   footer {
-    position: fixed;
-    height: 60px;
-    background-color: #333;
+    /* position: fixed; */
+    height: 30px;
+    background-color: #222;
     bottom: 0px;
     left: 0px;
     right: 0px;
+    margin-top: 30px;
     margin-bottom: 0px;
     padding: 10px 0 30px 0;
   }
@@ -45,34 +45,19 @@ body {
     width: 1200px;
     margin: 0 auto;
   }
-  div.home {
+  div.content {
     padding: 30px 30px 30px 30px;
-    background-color: #333;
+    background-color: #222;
     -webkit-border-radius: 6px;
        -moz-border-radius: 6px;
             border-radius: 6px;
   }
-  div.about {
-    padding: 30px 30px 30px 30px;
-    background-color: #333;
-    -webkit-border-radius: 6px;
-       -moz-border-radius: 6px;
-            border-radius: 6px;
+
+  div.large-cover {
+    float: left;
+    margin: 10px 30px 30px 10px;
   }
-  div.callback {
-    padding: 30px 30px 30px 30px;
-    background-color: #333;
-    -webkit-border-radius: 6px;
-       -moz-border-radius: 6px;
-            border-radius: 6px;
-  }
-  div.discover_enhanced {
-    padding: 30px 30px 30px 30px;
-    background-color: #333;
-    -webkit-border-radius: 6px;
-       -moz-border-radius: 6px;
-            border-radius: 6px;
-  }
+
   h2 {
     font-family: "Helvetica Neue Light",Helvetica,Arial;
     font-size: 3em;
@@ -112,12 +97,16 @@ body {
     width: 100%;
 }
 
-td, th {
-    border: 1px 0 solid #dddddd;
-    text-align: left;
-    padding: 8px;
+  td, th {
+      text-align: left;
+      padding: 8px;
 }
 
-tr:nth-child(even) {
-    background-color: #444;
+  thead {
+      font-size: 1.5em;
+      border-bottom: 1px solid #444;
+  }
+
+  tr:nth-child(even) {
+      background-color: #252525;
 }

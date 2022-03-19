@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
-  <div class="discover_enhanced">
+  <div class="content discover_enhanced">
+    <div class="large-cover">
+      {{cover|safe}}
+    </div>
     <h1>Discover Weekly Enhanced</h1>
     <p>Here is where the user's Discover Weekly Enhanced playlist will appear.</p>
     {{table|safe}}
