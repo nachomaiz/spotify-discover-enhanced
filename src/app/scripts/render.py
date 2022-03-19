@@ -5,9 +5,11 @@ import spotipy
 from .data import Playlist
 
 
-def render_playlist(playlist: Playlist) -> str:
+def render_playlist(playlist: Playlist) -> tuple[str, str]:
     """Render Spotify Playlist"""
     table = playlist.summary()
+
+    total_duration = pd.to_datetime(table["Duration"].sum(), unit='s').strftime("%M:%S")
 
     # Convert Duration into seconds.
     table["Duration"] = pd.to_datetime(table["Duration"], unit="s")
@@ -25,7 +27,7 @@ def render_playlist(playlist: Playlist) -> str:
 
     styled_table = table.style.format({"Duration": lambda s: s.strftime("%M:%S")})
 
-    return styled_table.to_html(border=0)
+    return styled_table.to_html(border=0), total_duration
 
 
 def html_img_url(url: str, width: int, height: int) -> str:

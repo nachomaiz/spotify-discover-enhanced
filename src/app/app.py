@@ -43,12 +43,15 @@ def discover_enhanced():
 
     playlist = Playlist.from_response(test_playlist_response)
 
-    table = render_playlist(playlist)
+    table, total_duration = render_playlist(playlist)
 
     cover = playlist.info["images"][1]["url"]
 
     return render_template(
-        "discover_enhanced.html", table=table, cover=html_img_url(cover, 240, 240)
+        "discover_enhanced.html",
+        table=table,
+        cover=html_img_url(cover, 240, 240),
+        total_duration=total_duration,
     )
 
 
