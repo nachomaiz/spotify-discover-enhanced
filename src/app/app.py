@@ -12,13 +12,17 @@ import spotipy as sp
 import pandas as pd
 
 from scripts.data import Playlist
-from scripts.render import render_playlist
+from scripts.render import render_playlist, html_img_url
+
+from credentials import APP_SECRET_KEY
+
+from scripts.dev import register_environment_variables
 
 SCOPES = ["playlist-modify-private", "playlist-modify-public", "user-top-read"]
 
 app = Flask(__name__)
 
-app.secret_key = "SessionSecretKey"
+app.secret_key = APP_SECRET_KEY
 
 with open("test/samples/playlist.json", encoding="utf-8") as f:
     test_playlist_response = json.load(f)
@@ -36,12 +40,16 @@ def about():
 
 @app.route("/discover_enhanced")
 def discover_enhanced():
-    
+
     playlist = Playlist.from_response(test_playlist_response)
-    
+
     table = render_playlist(playlist)
-    
-    return render_template("discover_enhanced.html", table=table)
+
+    cover = playlist.info["images"][1]["url"]
+
+    return render_template(
+        "discover_enhanced.html", table=table, cover=html_img_url(cover, 240, 240)
+    )
 
 
 @app.route("/callback")
@@ -57,7 +65,7 @@ def callback():
     return render_template("callback.html", code=code)
 
 
-# # authorization-code-flow Step 1. Have your application request authorization; 
+# # authorization-code-flow Step 1. Have your application request authorization;
 # # the user logs in and authorizes access
 # @app.route("/")
 # def verify():

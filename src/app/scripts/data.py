@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class Track:
-    """Track data structure."""
+    """Track object."""
 
     def __init__(self, uid: str, name: str, **kwargs) -> None:
         self.uid = uid
@@ -49,7 +49,7 @@ class Track:
 
 
 class Playlist:
-    """Playlist data structure."""
+    """Playlist object."""
 
     def __init__(self, uid: str, name: str, tracks: list[Track], **kwargs) -> None:
         self.uid = uid
@@ -62,7 +62,9 @@ class Playlist:
         """Create Playlist from `spotipy.Spotify().playlist` response."""
         res = {} | response
         uid = res.pop("id")
-        tracks = [Track.from_response(item["track"]) for item in res.pop("tracks")["items"]]
+        tracks = [
+            Track.from_response(item["track"]) for item in res.pop("tracks")["items"]
+        ]
         name = res.pop("name")
         return cls(uid, name, tracks, **res)
 
@@ -102,6 +104,11 @@ class Playlist:
         """Track albums for tracks in playlist."""
         return [track.duration for track in self.tracks]
 
+    @property
+    def track_cover_urls(self) -> list[str]:
+        """Track album cover URLs for tracks in playlist."""
+        return [track.info["album"]["images"][2]["url"] for track in self.tracks]
+
     def summary(self) -> pd.DataFrame:
         """Summary Dataframe for playlist.
 
@@ -112,6 +119,7 @@ class Playlist:
         """
         return pd.DataFrame(
             [
+                self.track_cover_urls,
                 self.track_names,
                 self.track_artists,
                 self.track_albums,
@@ -119,7 +127,7 @@ class Playlist:
             ],
         ).T.rename(
             index=dict(enumerate(self.track_uids)),
-            columns=dict(enumerate(["Name", "Artists", "Album", "Duration"])),
+            columns=dict(enumerate(["Cover", "Name", "Artists", "Album", "Duration"])),
         )
 
     def audio_features(self, spotify: spotipy.Spotify) -> pd.DataFrame:
@@ -145,7 +153,6 @@ class Playlist:
             "liveness",
             "key",
             "loudness",
-            "mode",
             "valence",
             "tempo",
         ]
