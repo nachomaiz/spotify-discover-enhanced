@@ -1,21 +1,18 @@
 # pylint: disable = missing-function-docstring
 # pylint: disable = invalid-name
 
-import time
-from typing import Any
 import json
 
 from flask import Flask, request, session, redirect, render_template
 from flask.sessions import SessionMixin
 
 import spotipy as sp
-import pandas as pd
 
 from scripts.data import Playlist
-from scripts.render import render_playlist, html_img_url
+from scripts.render import render_playlist, html_img_url, seconds_to_mm_ss
 
+# DEV: Set up secrets environment
 from credentials import APP_SECRET_KEY
-
 from scripts.dev import register_environment_variables
 
 SCOPES = ["playlist-modify-private", "playlist-modify-public", "user-top-read"]
@@ -43,15 +40,15 @@ def discover_enhanced():
 
     playlist = Playlist.from_response(test_playlist_response)
 
-    table, total_duration = render_playlist(playlist)
+    total_duration = int(sum(playlist.track_duration))
 
-    cover = playlist.info["images"][1]["url"]
+    cover = playlist.get_cover_url(300)
 
     return render_template(
         "discover_enhanced.html",
-        table=table,
-        cover=html_img_url(cover, 240, 240),
-        total_duration=total_duration,
+        table=render_playlist(playlist.summary()),
+        cover=html_img_url(cover, 240, 240, alt="Cover"),
+        total_duration=seconds_to_mm_ss(total_duration),
     )
 
 
@@ -143,4 +140,6 @@ def callback():
 
 
 if __name__ == "__main__":
+    register_environment_variables()
+    
     app.run(debug=True)

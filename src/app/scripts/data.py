@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Literal
 
 import spotipy
 import pandas as pd
@@ -73,6 +73,16 @@ class Playlist:
         """Create Playlist by calling `.track()` from client."""
         res: dict[str, Any] = spotify.playlist(uid)
         return cls.from_response(res)
+
+    def get_cover_url(self, size: Literal[60, 300, 640]) -> str:
+        """Get Spotify cover URL."""
+        pos = {
+            640: 0,
+            300: 1,
+            60: 2,
+        }
+
+        return self.info["images"][pos[size]]["url"]
 
     @property
     def track_uids(self) -> list[str]:
