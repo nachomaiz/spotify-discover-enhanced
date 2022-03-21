@@ -5,7 +5,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 import pandas as pd
 
-from .data import Playlist
+from app.models import Playlist
 
 SCOPES = ["playlist-read-private", "playlist-modify-private"]
 
@@ -62,5 +62,7 @@ class DiscoverEnhancer:
         Playlist
             Archive playlist after creation.
         """
-        res: dict[str, Any]= self.spotify.user_playlist_create(self.user, name=name, public=False)
+        res: dict[str, Any] = self.spotify.user_playlist_create(
+            self.user, name=name, public=False
+        )
         return Playlist.from_response(res)

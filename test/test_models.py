@@ -6,17 +6,14 @@ from typing import Any
 import unittest
 import unittest.mock
 
-import pathlib
 import json
 
-from src.app.scripts.data import Playlist, Track
+from app.models import Playlist, Track
 
-HERE = pathlib.Path(__file__).parent
-
-with open(HERE.parent.parent / "samples" / "track.json", encoding="utf-8") as f:
+with open("samples/track.json", encoding="utf-8") as f:
     sample_track: dict[str, Any] = json.load(f)
 
-with open(HERE.parent.parent / "samples" / "playlist.json", encoding="utf-8") as f:
+with open("samples/playlist.json", encoding="utf-8") as f:
     sample_playlist: dict[str, Any] = json.load(f)
 
 

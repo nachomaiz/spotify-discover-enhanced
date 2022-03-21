@@ -1,7 +1,7 @@
 from __future__ import annotations
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 
-import spotipy
+import spotipy as sp
 import pandas as pd
 
 
@@ -22,7 +22,7 @@ class Track:
         return cls(uid, name, **res)
 
     @classmethod
-    def from_client(cls, uid: str, spotify: spotipy.Spotify) -> Track:
+    def from_client(cls, uid: str, spotify: sp.Spotify) -> Track:
         """Create Track by calling `.track()` from client."""
         res: dict[str, Any] = spotify.track(uid)
         return cls.from_response(res)
@@ -69,7 +69,7 @@ class Playlist:
         return cls(uid, name, tracks, **res)
 
     @classmethod
-    def from_client(cls, uid: str, spotify: spotipy.Spotify) -> Playlist:
+    def from_client(cls, uid: str, spotify: sp.Spotify) -> Playlist:
         """Create Playlist by calling `.track()` from client."""
         res: dict[str, Any] = spotify.playlist(uid)
         return cls.from_response(res)
@@ -167,3 +167,36 @@ class Playlist:
             "tempo",
         ]
         return res.loc[:, cols]
+
+
+class DiscoverWeekly(Playlist):
+    """Discover Weekly Playlist."""
+
+    def __init__(self, *args, user: str, spotify: sp.Spotify, **kwargs) -> None:
+        self.user = user
+        self.spotify = spotify
+        super().__init__(*args, **kwargs)
+
+    def create_discover_archive(
+        self, public: bool = False, collaborative: bool = False
+    ) -> Optional[dict[str, Any]]:
+        """Create Discover Weekly archive playlist.
+
+        Parameters
+        ----------
+        public : bool, optional
+            Is the created playlist public, by default False
+        collaborative : bool, optional
+            Is the created playlist collaborative, by default False
+        """
+        return self.spotify.user_playlist_create(
+            self.user,
+            "Discover Weekly Archive",
+            public=public,
+            collaborative=collaborative,
+            description="Discover Weekly Archive Description",
+        )
+
+    def update_discover_archive(self) -> None:
+        """Update Discover Weekly archive playlist."""
+        self.spotify.user_playlist_add_tracks(self.user, self.uid, self.track_uids)
