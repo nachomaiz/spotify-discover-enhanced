@@ -1,21 +1,17 @@
 # pylint: disable = missing-function-docstring
 # pylint: disable = invalid-name
 
-import time
-from typing import Any
 import json
 
 from flask import request, session, redirect, render_template
-from flask.sessions import SessionMixin
 
 import spotipy as sp
 
 from app.models import Playlist
 from app.views import render_playlist, seconds_to_mm_ss
+from app.auth import get_token
 
 from app import app
-
-SCOPES = ["playlist-modify-private", "playlist-modify-public", "user-top-read"]
 
 with open("samples/playlist.json", encoding="utf-8") as f:
     test_playlist_response = json.load(f)
@@ -113,29 +109,29 @@ def callback():
 
 
 # # Checks to see if token is valid and gets a new token if not
-def get_token(session_: SessionMixin) -> tuple[dict[str, Any], bool]:
-    token_valid = False
-    token_info = session_.get("token_info", {})
+# def get_token(session_: SessionMixin) -> tuple[dict[str, Any], bool]:
+#     token_valid = False
+#     token_info = session_.get("token_info", {})
 
-    # Checking if the session already has a token stored
-    if not session_.get("token_info", False):
-        token_valid = False
-        return token_info, token_valid
+#     # Checking if the session already has a token stored
+#     if not session_.get("token_info", False):
+#         token_valid = False
+#         return token_info, token_valid
 
-    # Checking if token has expired
-    now = int(time.time())
-    is_token_expired = session_.get("token_info").get("expires_at") - now < 60
+#     # Checking if token has expired
+#     now = int(time.time())
+#     is_token_expired = session_.get("token_info").get("expires_at") - now < 60
 
-    # Refreshing token if it has expired
-    if is_token_expired:
-        # Don't reuse a SpotifyOAuth object because they store token info and you could leak user tokens if you reuse a SpotifyOAuth object
-        sp_oauth = sp.oauth2.SpotifyOAuth(scope=SCOPES)
-        token_info = sp_oauth.refresh_access_token(
-            session_.get("token_info").get("refresh_token")
-        )
+#     # Refreshing token if it has expired
+#     if is_token_expired:
+#         # Don't reuse a SpotifyOAuth object because they store token info and you could leak user tokens if you reuse a SpotifyOAuth object
+#         sp_oauth = sp.oauth2.SpotifyOAuth(scope=SCOPES)
+#         token_info = sp_oauth.refresh_access_token(
+#             session_.get("token_info").get("refresh_token")
+#         )
 
-    token_valid = True
-    return token_info, token_valid
+#     token_valid = True
+#     return token_info, token_valid
 
 
 if __name__ == "__main__":

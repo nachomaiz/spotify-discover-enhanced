@@ -3,24 +3,26 @@ import pandas as pd
 
 def render_playlist(summary: pd.DataFrame) -> str:
     """Render Spotify Playlist in HTML from Playlist summary."""
+    
+    table = summary.copy()
 
     # Convert Duration into seconds.
-    summary["Duration"] = summary["Duration"].apply(seconds_to_mm_ss)
+    table["Duration"] = table["Duration"].apply(seconds_to_mm_ss)
 
     # Album Cover
-    summary["Cover"] = summary["Cover"].apply(
+    table["Cover"] = table["Cover"].apply(
         html_img_url, args=(60, 60), loading="lazy"
     )
 
     # Generate combined Track Column
-    summary["Track"] = summary["Name"] + "<br/>" + summary["Artists"]
-    summary = summary.loc[:, ["Cover", "Track", "Album", "Duration"]]
+    table["Track"] = table["Name"] + "<br/>" + table["Artists"]
+    table = table.loc[:, ["Cover", "Track", "Album", "Duration"]]
 
     # Set numerical index before rendering
-    summary = summary.reset_index(drop=True)
-    summary.index += 1
+    table = table.reset_index(drop=True)
+    table.index += 1
 
-    return summary.style.format({}).to_html(
+    return table.style.format({}).to_html(
         border=0, table_attributes='class="playlist"'
     )
 
