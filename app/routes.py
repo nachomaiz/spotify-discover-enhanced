@@ -10,26 +10,34 @@ import spotipy as sp
 from app.models import Playlist
 from app.views import render_playlist, seconds_to_mm_ss
 from app.auth import get_token
+from app.forms import LoginForm, LogoutForm, get_login_form
 
 from app import app
 
+## DEV
+
 with open("samples/playlist.json", encoding="utf-8") as f:
     test_playlist_response = json.load(f)
+    
+authorized = False
 
 
-@app.route("/")
-@app.route("/index")
+@app.route("/", methods=["GET", "POST"])
+@app.route("/index", methods=["GET", "POST"])
 def home():
-    return render_template("home.html")
+    nav_form = get_login_form(authorized)
+    return render_template("home.html", nav_form=nav_form)
 
 
-@app.route("/about")
+@app.route("/about", methods=["GET", "POST"])
 def about():
-    return render_template("about.html")
+    nav_form = get_login_form(authorized)
+    return render_template("about.html", nav_form=nav_form)
 
 
-@app.route("/discover_enhanced")
+@app.route("/discover_enhanced", methods=["GET", "POST"])
 def discover_enhanced():
+    nav_form = get_login_form(authorized)
 
     playlist = Playlist.from_response(test_playlist_response)
 
@@ -42,11 +50,13 @@ def discover_enhanced():
         table=render_playlist(playlist.summary()),
         cover=cover,
         total_duration=seconds_to_mm_ss(total_duration),
+        nav_form=nav_form,
     )
 
 
 @app.route("/callback")
 def callback():
+    nav_form = get_login_form(authorized)
 
     # will enable once callback does things.
     # sp_oauth = sp.oauth2.SpotifyOAuth(scope=SCOPES)
@@ -55,7 +65,7 @@ def callback():
     # token_info = sp_oauth.get_access_token(code)
     session["token_info"] = {"code": code}  # change for `token_info`
 
-    return render_template("callback.html", code=code)
+    return render_template("callback.html", code=code, nav_form=nav_form)
 
 
 # # authorization-code-flow Step 1. Have your application request authorization;

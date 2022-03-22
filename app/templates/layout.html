@@ -18,6 +18,7 @@
                         <!--DEV-->
                         <li><a href="{{ url_for('callback') }}?code=TestCallback">Callback (DEV)</a></li>
                         <li><a href="{{ url_for('discover_enhanced') }}">Discover Enhanced</a></li>
+                        <li><form action="" method="post" novalidate>{{ nav_form.submit() }}</form></li>
                     </ul>
                 </nav>
             </strong>

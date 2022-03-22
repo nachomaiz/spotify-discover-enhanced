@@ -63,7 +63,7 @@ class Playlist:
         res = {} | response
         uid = res.pop("id")
         tracks = [
-            Track.from_response(item["track"]) for item in res.pop("tracks")["items"]
+            Track.from_response(item["track"] | {"added_at":item["added_at"]}) for item in res.pop("tracks")["items"]
         ]
         name = res.pop("name")
         return cls(uid, name, tracks, **res)
@@ -118,6 +118,11 @@ class Playlist:
     def track_cover_urls(self) -> list[str]:
         """Track album cover URLs for tracks in playlist."""
         return [track.info["album"]["images"][2]["url"] for track in self.tracks]
+    
+    @property
+    def track_date_added(self) -> list[str]:
+        """Track date added to playlist."""
+        return [track.info["added_at"] for track in self.tracks]
 
     def summary(self) -> pd.DataFrame:
         """Summary Dataframe for playlist.
@@ -133,14 +138,15 @@ class Playlist:
                 self.track_names,
                 self.track_artists,
                 self.track_albums,
+                self.track_date_added,
                 self.track_duration,
             ],
         ).T.rename(
             index=dict(enumerate(self.track_uids)),
-            columns=dict(enumerate(["Cover", "Name", "Artists", "Album", "Duration"])),
+            columns=dict(enumerate(["Cover", "Name", "Artists", "Album", "Date added", "Duration"])),
         )
 
-    def audio_features(self, spotify: spotipy.Spotify) -> pd.DataFrame:
+    def audio_features(self, spotify: sp.Spotify) -> pd.DataFrame:
         """Fetch audio features from Spotify and return as DataFrame.
 
         Parameters
