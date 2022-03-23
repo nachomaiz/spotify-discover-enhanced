@@ -10,7 +10,7 @@ import spotipy as sp
 from app.models import Playlist
 from app.views import render_playlist, seconds_to_mm_ss
 from app.auth import get_token
-from app.forms import LoginForm, LogoutForm, get_login_form
+from app.forms import get_login_form
 
 from app import app
 

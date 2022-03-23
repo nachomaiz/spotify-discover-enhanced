@@ -1,10 +1,16 @@
 from __future__ import annotations
 from typing import Any, Literal, Optional
+import sqlalchemy as sql
+
+from flask_login import current_user
+from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
 
 import spotipy as sp
 import pandas as pd
 
+from app import db, spotify_blueprint
 
+# Spotify classes
 class Track:
     """Track object."""
 
@@ -63,7 +69,8 @@ class Playlist:
         res = {} | response
         uid = res.pop("id")
         tracks = [
-            Track.from_response(item["track"] | {"added_at":item["added_at"]}) for item in res.pop("tracks")["items"]
+            Track.from_response(item["track"] | {"added_at": item["added_at"]})
+            for item in res.pop("tracks")["items"]
         ]
         name = res.pop("name")
         return cls(uid, name, tracks, **res)
@@ -118,7 +125,7 @@ class Playlist:
     def track_cover_urls(self) -> list[str]:
         """Track album cover URLs for tracks in playlist."""
         return [track.info["album"]["images"][2]["url"] for track in self.tracks]
-    
+
     @property
     def track_date_added(self) -> list[str]:
         """Track date added to playlist."""
@@ -143,7 +150,11 @@ class Playlist:
             ],
         ).T.rename(
             index=dict(enumerate(self.track_uids)),
-            columns=dict(enumerate(["Cover", "Name", "Artists", "Album", "Date added", "Duration"])),
+            columns=dict(
+                enumerate(
+                    ["Cover", "Name", "Artists", "Album", "Date added", "Duration"]
+                )
+            ),
         )
 
     def audio_features(self, spotify: sp.Spotify) -> pd.DataFrame:
@@ -206,3 +217,22 @@ class DiscoverWeekly(Playlist):
     def update_discover_archive(self) -> None:
         """Update Discover Weekly archive playlist."""
         self.spotify.user_playlist_add_tracks(self.user, self.uid, self.track_uids)
+
+
+# SQLAlchemy classes for getting
+
+class User(db.Model):
+    id: sql.Column = db.Column(db.Integer, primary_key=True)
+    uid: sql.Column = db.Column(db.String(255), unique=True)
+    email: sql.Column = db.Column(db.String(64), index=True, unique=True, nullable=True)
+
+    def __repr__(self):
+        return f"<User {self.uid}>"
+
+
+class OAuth(OAuthConsumerMixin, db.Model):
+    user_id: sql.Column = db.Column(db.Integer, db.ForeignKey(User.id))
+    user = db.relationship(User)
+
+
+spotify_blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
