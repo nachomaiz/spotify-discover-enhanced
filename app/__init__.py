@@ -9,7 +9,7 @@ from app.config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
-migrate = Migrate(app)
+migrate = Migrate(app, db)
 
 spotify_blueprint = make_spotify_blueprint(
     app.config.get("SPOTIPY_CLIENT_ID"),

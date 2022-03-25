@@ -11,6 +11,8 @@ class Config:
     SPOTIPY_SCOPES = ["playlist-modify-private", "playlist-modify-public", "user-top-read"]
     
     # SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+    SQLALCHEMY_DATABASE_URI = (
+        os.environ.get('DATABASE_URL') or
         'sqlite:///' + os.path.join(basedir, 'app.db')
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False

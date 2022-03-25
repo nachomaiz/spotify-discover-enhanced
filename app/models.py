@@ -233,6 +233,3 @@ class User(db.Model):
 class OAuth(OAuthConsumerMixin, db.Model):
     user_id: sql.Column = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relationship(User)
-
-
-spotify_blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)

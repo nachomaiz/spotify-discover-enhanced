@@ -5,14 +5,18 @@ import json
 
 from flask import request, session, redirect, render_template
 
+from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
+from flask_login import current_user
+
 import spotipy as sp
 
-from app.models import Playlist
+from app.models import Playlist, OAuth
 from app.views import render_playlist, seconds_to_mm_ss
 from app.auth import get_token
 from app.forms import get_login_form
 
-from app import app
+from app import app, db
+from app.models import spotify_blueprint
 
 ## DEV
 
@@ -20,6 +24,10 @@ with open("samples/playlist.json", encoding="utf-8") as f:
     test_playlist_response = json.load(f)
     
 authorized = False
+
+
+spotify_blueprint.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
+
 
 
 @app.route("/", methods=["GET", "POST"])
