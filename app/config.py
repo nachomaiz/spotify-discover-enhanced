@@ -16,3 +16,7 @@ class Config:
         'sqlite:///' + os.path.join(basedir, 'app.db')
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    SPOTIFY_OAUTH_CLIENT_ID = os.environ.get("SPOTIFY_OAUTH_CLIENT_ID")
+    SPOTIFY_OAUTH_CLIENT_SECRET = os.environ.get("SPOTIFY_OAUTH_CLIENT_SECRET")
+    SPOTIFY_OAUTH_REDIRECT_URI = os.environ.get("SPOTIFY_OAUTH_REDIRECT_URI")

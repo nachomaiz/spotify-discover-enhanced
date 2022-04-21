@@ -1,54 +1,65 @@
 # pylint: disable = missing-function-docstring
 # pylint: disable = invalid-name
 
+import os
+
 import json
 
-from flask import request, session, redirect, render_template, flash
+from flask import request, session, redirect, render_template, url_for
 
-from flask_dance.consumer.storage.sqla import SQLAlchemyStorage
-from flask_login import current_user
+# from flask_login import current_user
 
-import spotipy as sp
+# import spotipy as sp
 
 from app.models import Playlist
 from app.views import render_playlist, seconds_to_mm_ss
 
-from app.oauth.scripts import get_token
 from app.oauth.forms import get_login_form
-from app.oauth.models import OAuth
+# from app.oauth.scripts import get_token
+# from app.oauth.models import OAuth
 
-from app import app, db, spotify_bp, spotify
+from app import app
+from app import spotify
+# from app import spotify_bp
+# from app import db
 
 ## DEV
 
 with open("samples/playlist.json", encoding="utf-8") as f:
     test_playlist_response = json.load(f)
     
-authorized = False
+dev_authorized = False
 
-
-spotify_bp.storage = SQLAlchemyStorage(OAuth, db.session, user=current_user)
-
-
-
-@app.route("/", methods=["GET", "POST"])
-@app.route("/index", methods=["GET", "POST"])
+@app.route("/")
+@app.route("/index")
 def home():
-    # if not spotify.authorized:
-    #     flash("You are not authorized.")
-    nav_form = get_login_form(authorized)
-    return render_template("home.html", nav_form=nav_form)
+    nav_form = get_login_form(dev_authorized)
+    # return render_template("home.html", nav_form=nav_form)
+    return render_template("home.html", test=os.environ["SPOTIFY_OAUTH_CLIENT_ID"])
+
+@app.route("/login")
+def spotify_login():
+    if not spotify.authorized:
+        return redirect(url_for("spotify.login"))
+    account_info = spotify.get("/me")
+    
+    if account_info.ok:
+        account_info_json = account_info.json()
+    
+        return f"<h1>You are logged in {account_info_json['display_name']}.</h1>"
+    
+    return "<h1>Request failed.</h1>"
 
 
-@app.route("/about", methods=["GET", "POST"])
+@app.route("/about")
 def about():
-    nav_form = get_login_form(authorized)
-    return render_template("about.html", nav_form=nav_form)
+    nav_form = get_login_form(dev_authorized)
+    return render_template("about.html")
 
 
-@app.route("/discover_enhanced", methods=["GET", "POST"])
+@app.route("/discover_enhanced")
 def discover_enhanced():
-    nav_form = get_login_form(authorized)
+    nav_form = get_login_form(dev_authorized)
 
     playlist = Playlist.from_response(test_playlist_response)
 
@@ -61,13 +72,12 @@ def discover_enhanced():
         table=render_playlist(playlist.summary()),
         cover=cover,
         total_duration=seconds_to_mm_ss(total_duration),
-        nav_form=nav_form,
     )
 
 
 @app.route("/callback")
 def callback():
-    nav_form = get_login_form(authorized)
+    nav_form = get_login_form(dev_authorized)
 
     # will enable once callback does things.
     # sp_oauth = sp.oauth2.SpotifyOAuth(scope=SCOPES)
@@ -76,7 +86,7 @@ def callback():
     # token_info = sp_oauth.get_access_token(code)
     session["token_info"] = {"code": code}  # change for `token_info`
 
-    return render_template("callback.html", code=code, nav_form=nav_form)
+    return render_template("callback.html", code=code)
 
 
 # # authorization-code-flow Step 1. Have your application request authorization;
@@ -153,7 +163,3 @@ def callback():
 
 #     token_valid = True
 #     return token_info, token_valid
-
-
-if __name__ == "__main__":
-    app.run(debug=True)

@@ -1,13 +1,13 @@
 from __future__ import annotations
 from typing import Any, Literal, Optional
-import sqlalchemy as sql
+# import sqlalchemy as sql
 
-from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
+# from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
 
 import spotipy as sp
 import pandas as pd
 
-from app import db
+# from app import db
 
 # Spotify classes
 class Track:
