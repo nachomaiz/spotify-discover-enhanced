@@ -5,8 +5,9 @@
 from flask import Flask, flash, redirect, url_for
 from flask_dance.contrib.spotify import make_spotify_blueprint, spotify
 from flask_sqlalchemy import SQLAlchemy
-
-# from flask_migrate import Migrate
+from flask_migrate import Migrate
+from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
+from flask_dance.consumer import oauth_authorized, oauth_error
 from flask_login import (
     UserMixin,
     current_user,
@@ -15,12 +16,11 @@ from flask_login import (
     login_user,
     logout_user,
 )
-from flask_dance.consumer.storage.sqla import OAuthConsumerMixin, SQLAlchemyStorage
-from flask_dance.consumer import oauth_authorized, oauth_error
-from sqlalchemy.exc import NoResultFound
 
 import os
 import credentials
+from sqlalchemy.exc import NoResultFound
+
 
 ## Config
 
@@ -30,7 +30,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 def register_environment_variables() -> None:
     """Register environment variables for Spotipy and Flask."""
 
-    # Dev: NOSHIP
+    # Dev: enable http callbacks instead of https for development
     os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
     # Spotipy
@@ -43,9 +43,6 @@ def register_environment_variables() -> None:
     os.environ["SPOTIFY_OAUTH_CLIENT_ID"] = credentials.SPOTIPY_CLIENT_ID
     os.environ["SPOTIFY_OAUTH_CLIENT_SECRET"] = credentials.SPOTIPY_CLIENT_SECRET
     os.environ["SPOTIFY_OAUTH_REDIRECT_URI"] = credentials.SPOTIPY_REDIRECT_URI
-
-
-register_environment_variables()
 
 
 class Config:
@@ -73,13 +70,12 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)
-# migrate = Migrate(app, db)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = "spotify.login"
 
 
 ## OAuth
-
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -166,9 +162,9 @@ app.register_blueprint(spotify_blueprint, url_prefix="/spotify_login")
 
 ## Routes
 
-# @app.route("/")
-# def index():
-#     return "<h1>Index</h1>"
+@app.route("/")
+def index():
+    return "<h1>Index</h1>"
 
 
 @app.route("/login")
@@ -185,9 +181,9 @@ def spotify_login():
     return "<h1>Request failed!</h1>"
 
 
-@app.route("/discover-weekly-enhanced")
+@app.route("/protected-page")
 @login_required
-def discover_weekly_enhanced():
+def protected_page():
     return (
         f"<h1>Here is where the main functionality will exist, {current_user.username}"
     )
